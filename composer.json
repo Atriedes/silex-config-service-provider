@@ -1,0 +1,24 @@
+{
+    "name": "jowy/silex-config-service-provider",
+    "description": "Silex Config Service Provider",
+    "require": {
+        "pimple/pimple": "~3.0"
+    },
+    "require-dev": {
+        "symfony/yaml": "~2.6"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Prasetyo Wicaksono",
+            "email": "pras@openmailbox.org"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Silex\\" : "src/Silex/",
+            "Jowy\\" : "src/Jowy"
+        }
+    },
+    "minimum-stability": "stable"
+}
