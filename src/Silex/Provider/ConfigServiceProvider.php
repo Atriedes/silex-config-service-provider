@@ -8,6 +8,10 @@ use Pimple\ServiceProviderInterface;
 use Silex\Component\Config\Driver\Php;
 use Silex\Component\Config\Driver\Yaml;
 
+/**
+ * Class ConfigServiceProvider
+ * @package Silex\Provider
+ */
 class ConfigServiceProvider implements ServiceProviderInterface
 {
     /**
@@ -27,7 +31,7 @@ class ConfigServiceProvider implements ServiceProviderInterface
     {
         $this->filename = $filename;
 
-        list($path, $ext) = explode(".", $filename);
+        list($file, $ext) = explode(".", basename($filename));
         
         $this->extension = $ext;
     }

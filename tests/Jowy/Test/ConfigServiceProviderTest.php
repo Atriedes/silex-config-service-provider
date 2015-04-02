@@ -30,7 +30,7 @@ class ConfigServiceProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function testYmlConfig()
     {
-        $this->app->register(new ConfigServiceProvider(__DIR__ . "/config.yml"));
+        $this->app->register(new ConfigServiceProvider(__DIR__ . "/../Test/config.yml"));
 
         $this->assertEquals("value", $this->app["config"]->get("main/key"));
     }
