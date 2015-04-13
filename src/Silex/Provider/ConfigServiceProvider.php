@@ -41,6 +41,22 @@ class ConfigServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
+        $container["config.factory.php"] =  function (Container $container) {
+            return new Php(
+                $this->filename,
+                $container["cache.factory"],
+                $container["config.cache.lifetime"]
+            );
+        };
+
+        $container["config.factory.yml"] =  function (Container $container) {
+            return new Yaml(
+                $this->filename,
+                $container["cache.factory"],
+                $container["config.cache.lifetime"]
+            );
+        };
+
         $container["config"] = function () use ($container) {
             if (! file_exists($this->filename)) {
                 throw new \InvalidArgumentException(
@@ -48,19 +64,15 @@ class ConfigServiceProvider implements ServiceProviderInterface
                 );
             }
 
-            switch ($this->extension) {
-                case "php":
-                    $driver = new Php($this->filename);
-                    break;
-                case "yml":
-                    $driver =  new Yaml($this->filename);
-                    break;
-                default:
-                    throw new \InvalidArgumentException("Unknown driver for processing config file");
-                    break;
+            if (! $container->offsetExists("cache.factory")) {
+                $container["cache.factory"] = null;
             }
 
-            return $driver;
+            if (! $container->offsetExists("config.cache.lifetime")) {
+                $container["config.cache.lifetime"] = null;
+            }
+
+            return $container["config.factory.".$this->extension];
         };
     }
 }

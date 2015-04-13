@@ -2,7 +2,8 @@
     "name": "jowy/silex-config-service-provider",
     "description": "Silex Config Service Provider",
     "require": {
-        "pimple/pimple": "~3.0"
+        "pimple/pimple": "~3.0",
+        "jowy/silex-cache-service-provider": "~1.0"
     },
     "require-dev": {
         "symfony/yaml": "~2.6"

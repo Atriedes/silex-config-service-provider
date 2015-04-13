@@ -4,6 +4,7 @@
 namespace Jowy\Test;
 
 use Pimple\Container;
+use Silex\Provider\CacheServiceProvider;
 use Silex\Provider\ConfigServiceProvider;
 
 /**
@@ -42,6 +43,71 @@ class ConfigServiceProviderTest extends \PHPUnit_Framework_TestCase
     {
         $this->app->register(new ConfigServiceProvider(__DIR__ . "/config.php"));
 
+        $this->assertEquals("value", $this->app["config"]->get("main/key"));
+    }
+
+    /**
+     * test cached config value
+     */
+    public function testCachedPhpConfig()
+    {
+        $this->app->register(
+            new ConfigServiceProvider(__DIR__ . "/config.php"),
+            [
+                "config.cache.lifetime" => 300
+            ]
+        );
+
+        $this->app->register(
+            new CacheServiceProvider(),
+            [
+                "cache.driver" => "filesystem",
+                "cache.options" => [
+                    "namespace" => "jowy.config",
+                    "directory" => __DIR__ . "/Cache"
+                ]
+            ]
+        );
+
+        /**
+         * retrieve from file
+         */
+        $this->assertEquals("value", $this->app["config"]->get("main/key"));
+
+        /**
+         * retrieve from cache
+         */
+        $this->assertEquals("value", $this->app["config"]->get("main/key"));
+    }
+
+    public function testCachedYmlConfig()
+    {
+        $this->app->register(
+            new ConfigServiceProvider(__DIR__ . "/config.yml"),
+            [
+                "config.cache.lifetime" => 300
+            ]
+        );
+
+        $this->app->register(
+            new CacheServiceProvider(),
+            [
+                "cache.driver" => "filesystem",
+                "cache.options" => [
+                    "namespace" => "jowy.config",
+                    "directory" => __DIR__ . "/Cache"
+                ]
+            ]
+        );
+
+        /**
+         * retrieve from file
+         */
+        $this->assertEquals("value", $this->app["config"]->get("main/key"));
+
+        /**
+         * retrieve from cache
+         */
         $this->assertEquals("value", $this->app["config"]->get("main/key"));
     }
 }
