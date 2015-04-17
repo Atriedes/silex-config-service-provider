@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Silex\Provider;
 
 use Pimple\Container;
@@ -57,24 +56,34 @@ class ConfigServiceProvider implements ServiceProviderInterface
             );
         };
 
+        // create cacheable factory service for config
         $container["config"] = function () use ($container) {
+
+            if ($container->offsetExists("cache.factory") && $container["cache.factory"]->contains(sha1(__FILE__))) {
+                return unserialize($container["cache.factory"]->fetch(sha1(__FILE__)));
+            }
+
             if (! file_exists($this->filename)) {
                 throw new \InvalidArgumentException(
                     sprintf("The config file '%s' does not exist.", $this->filename)
                 );
             }
 
-            if (! $container->offsetExists("cache.factory")) {
-                $container["cache.factory"] = null;
-            }
-
-            if (! $container->offsetExists("config.cache.lifetime")) {
+            if ($container->offsetExists("cache.factory")
+                && $container->offsetExists("config.cache.lifetime")
+            ) {
+                $cache = $container["config.factory.".$this->extension];
+                $container["cache.factory"]->save(
+                    sha1(__FILE__),
+                    serialize($cache),
+                    $container["config.cache.lifetime"]
+                );
+            } else {
                 $container["config.cache.lifetime"] = null;
+                $container["cache.factory"] = null;
             }
 
             return $container["config.factory.".$this->extension];
         };
     }
 }
-
-// EOF
