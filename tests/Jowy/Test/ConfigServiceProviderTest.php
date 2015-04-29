@@ -110,6 +110,42 @@ class ConfigServiceProviderTest extends \PHPUnit_Framework_TestCase
          */
         $this->assertEquals("value", $this->app["config"]->get("main/key"));
     }
+
+    public function testRedisCachedConfig()
+    {
+        if (! extension_loaded("redis")) {
+            return;
+        }
+
+        $this->app->register(
+            new ConfigServiceProvider(__DIR__ . "/config.yml"),
+            [
+                "config.cache.lifetime" => 300
+            ]
+        );
+
+        $this->app->register(
+            new CacheServiceProvider(),
+            [
+                "cache.driver" => "redis",
+                "cache.options" => [
+                    "namespace" => "jowy.config",
+                    "host"  => "127.0.0.1",
+                    "port"      => 6379
+                ]
+            ]
+        );
+
+        /**
+         * retrieve from file
+         */
+        $this->assertEquals("value", $this->app["config"]->get("main/key"));
+
+        /**
+         * retrieve from cache
+         */
+        $this->assertEquals("value", $this->app["config"]->get("main/key"));
+    }
 }
 
 // EOF

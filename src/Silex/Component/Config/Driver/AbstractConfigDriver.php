@@ -82,13 +82,12 @@ abstract class AbstractConfigDriver
     }
 
     /**
-     * @param string $filename
      * @param Cache $cache
      * @return bool
      */
-    protected function retrieveCacheConfig($filename, Cache $cache = null)
+    protected function retrieveCacheConfig(Cache $cache = null)
     {
-        $this->cache_namespace = sha1($filename);
+        $this->cache_namespace = "config:";
         $this->cache = $cache;
 
         if (isset($cache) && $cache->contains($this->cache_namespace)) {
